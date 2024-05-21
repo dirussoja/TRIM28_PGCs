@@ -1,0 +1,20 @@
+#!/bin/bash
+#$ -N DNAse_LTR_Intersect
+#$ -cwd
+#$ -l h_data=5G,h_rt=0:10:00
+
+source ~/.bashrc
+
+module load bedtools/2.30.0
+
+peaks=/u/scratch/j/jadiruss/DNase_new/peaks
+outdir=/u/scratch/j/jadiruss/DNase_new/peaks/LTR
+rpt=/u/home/j/jadiruss/project-clarka/Genomes/mm39_STAR/TE
+
+bedtools intersect -wo -f 0.2 -a $peaks/E105_DNAse_peaks.narrowPeak -b $rpt/mm39_rptmskr_LTRonly.bed > $outdir/E105_DNAse_LTRoverlap.bed
+
+bedtools intersect -wo -f 0.2 -a $peaks/E125_M_DNAse_peaks.narrowPeak -b $rpt/mm39_rptmskr_LTRonly.bed > $outdir/E125_M_DNAse_LTRoverlap.bed
+bedtools intersect -wo -f 0.2 -a $peaks/E125_F_DNAse_peaks.narrowPeak -b $rpt/mm39_rptmskr_LTRonly.bed > $outdir/E125_F_DNAse_LTRoverlap.bed
+
+bedtools intersect -wo -f 0.2 -a $peaks/E145_M_DNAse_peaks.narrowPeak -b $rpt/mm39_rptmskr_LTRonly.bed > $outdir/E145_M_DNAse_LTRoverlap.bed
+bedtools intersect -wo -f 0.2 -a $peaks/E145_F_DNAse_peaks.narrowPeak -b $rpt/mm39_rptmskr_LTRonly.bed > $outdir/E145_F_DNAse_LTRoverlap.bed
