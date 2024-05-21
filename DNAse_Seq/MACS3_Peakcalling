@@ -1,0 +1,36 @@
+#!/bin/bash
+#$ -N DNAse_Macs3
+#$ -cwd
+#$ -l h_data=5G,h_rt=1:00:00
+#$ -t 1-5:1
+
+fqs=(
+E105
+E125_F
+E125_M
+E145_F
+E145_M
+)
+
+source ~/.bashrc
+
+module load samtools/1.15
+module load python/3.6.8
+
+align=/u/scratch/j/jadiruss/DNase_new/peaks/align
+out=/u/scratch/j/jadiruss/DNase_new/peaks
+
+threads=3
+
+COUNT=1
+for fq in "${fqs[@]}"; do
+    if [ $COUNT -eq $SGE_TASK_ID ]; then
+
+source /u/home/j/jadiruss/env_python3.6.8/bin/activate
+
+macs3 callpeak -t $align/$fq"_merge_STAR_namesort.bam" \
+-f BAM -g 2654621783 -n $fq"_DNAse" --outdir $out/ -q 0.01
+
+fi;
+    COUNT=$[COUNT+1];
+done;
