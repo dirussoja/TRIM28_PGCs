@@ -1,0 +1,58 @@
+#!/bin/bash
+#$ -N ATAC_RPKM
+#$ -cwd
+#$ -l h_data=2G,h_rt=2:00:00
+#$ -pe shared 6
+
+source ~/.bashrc
+
+module load bedtools/2.30.0
+module load python/3.6.8
+
+peaks=/u/scratch/j/jadiruss/ATAC_new/E145/peaks
+peaks105=/u/scratch/j/jadiruss/ATAC_new/E105/peaks
+out=/u/scratch/j/jadiruss/ATAC_new/enrichment
+bw105=/u/scratch/j/jadiruss/ATAC_new/E105/bw
+bw145=/u/scratch/j/jadiruss/ATAC_new/E145/bw
+
+threads=6
+
+
+#Merge filtered peaks files together
+cat $peaks/E145_FWT_genrich_out.narrowPeak $peaks/E145_FMUT_genrich_out.narrowPeak $peaks/E145_MWT_genrich_out.narrowPeak $peaks/E145_MMUT_genrich_out.narrowPeak \
+$peaks105/E105_FWT_genrich_out.narrowPeak $peaks105/E105_FMUT_genrich_out.narrowPeak $peaks105/E105_MWT_genrich_out.narrowPeak $peaks105/E105_MMUT_genrich_out.narrowPeak \
+> $out/TRIM28_ATAC_peakmerge.bed
+
+cat $peaks/E145_FWT_genrich_out.narrowPeak $peaks/E145_FMUT_genrich_out.narrowPeak $peaks/E145_MWT_genrich_out.narrowPeak $peaks/E145_MMUT_genrich_out.narrowPeak > $out/test_line_145.bed
+cat $peaks105/E105_FWT_genrich_out.narrowPeak $peaks105/E105_FMUT_genrich_out.narrowPeak $peaks105/E105_MWT_genrich_out.narrowPeak $peaks105/E105_MMUT_genrich_out.narrowPeak > $out/test_line_105.bed
+
+
+#sort the peak file for downstream processing
+sort -k1,1 -k2,2n $out/TRIM28_ATAC_peakmerge.bed > $out/TRIM28_ATAC_peakmerge_sort.bed
+
+sort -k1,1 -k2,2n $out/test_line_145.bed > $out/test_line_145_sort.bed
+sort -k1,1 -k2,2n $out/test_line_105.bed > $out/test_line_105_sort.bed
+
+
+
+#Now remove any overlapping or bookended peaks. 
+bedtools merge -i $out/TRIM28_ATAC_peakmerge_sort.bed -d 10 > $out/TRIM28_ATAC_peakmerge_sort_merge.bed
+
+bedtools merge -i $out/test_line_145_sort.bed -d 10 > $out/test_line_145_sort_merge.bed
+bedtools merge -i $out/test_line_105_sort.bed -d 10 > $out/test_line_105_sort_merge.bed
+
+
+
+#Use deeptools to get the RPKM for each peaks from input subtracted male and female TRIM28 ChIP samples. 
+source $HOME/env_python3.6.8/bin/activate
+
+multiBigwigSummary BED-file -b $bw105/E105_MWT_extend_RPKM_bs10.bw $bw105/E105_MMUT_extend_RPKM_bs10.bw $bw105/E105_FWT_extend_RPKM_bs10.bw $bw105/E105_FMUT_extend_RPKM_bs10.bw \
+$bw145/E145_MWT_extend_RPKM_bs10.bw $bw145/E145_MMUT_extend_RPKM_bs10.bw $bw145/E145_FWT_extend_RPKM_bs10.bw $bw145/E145_FMUT_extend_RPKM_bs10.bw \
+-o $out/ATAC_peaks_matrix.npz \
+--BED $out/TRIM28_ATAC_peakmerge_sort_merge.bed --outRawCounts $out/TRIM28_ATAC_RPKM_count.csv -p $threads
+
+multiBigwigSummary BED-file -b $bw145/E145_MWT_extend_RPKM_bs10.bw $bw145/E145_MMUT_extend_RPKM_bs10.bw $bw145/E145_FWT_extend_RPKM_bs10.bw $bw145/E145_FMUT_extend_RPKM_bs10.bw \
+-o $out/test_145.npz --BED $out/test_line_145_sort_merge.bed --outRawCounts $out/test_line_145_RPKM.csv -p $threads
+
+multiBigwigSummary BED-file -b $bw105/E105_MWT_extend_RPKM_bs10.bw $bw105/E105_MMUT_extend_RPKM_bs10.bw $bw105/E105_FWT_extend_RPKM_bs10.bw $bw105/E105_FMUT_extend_RPKM_bs10.bw \
+-o $out/test_105.npz --BED $out/test_line_105_sort_merge.bed --outRawCounts $out/test_line_105_RPKM.csv -p $threads
