@@ -2,7 +2,7 @@
 #$ -N PGCLC_H3K9_mm39
 #$ -cwd
 #$ -l h_data=10G,h_rt=8:00:00
-#$ -t 1-16:1
+#$ -t 1-2:1
 #$ -pe shared 6
 
 source ~/.bashrc
@@ -14,35 +14,19 @@ module load python/3.9.6
 module load star/2.7.9a
 
 fqs=(
-SRR10560100
-SRR10560101
-SRR10560104
-SRR10560105
-SRR10560106
-SRR10560108
-SRR10560109
-SRR10560111
-SRR10560112
-SRR10560114
-SRR10560115
-SRR10560117
-SRR13296474
-SRR13296476
-SRR13296479
-SRR13296481
+SRR13296472
+SRR13296477
 )
 
 threads=6
 
 genome=/u/home/j/jadiruss/project-clarka/Genomes/mm39_STAR_noGTF
-reads=/u/scratch/j/jadiruss/H3K9me3_new/reads/sorted
-outdir=/u/scratch/j/jadiruss/H3K9me3_new/summaries
+reads=/u/scratch/j/jadiruss/H3K9me3_update/FASTQ/sorted
+outdir=/u/scratch/j/jadiruss/H3K9me3_update/summaries
 
-readsout=/u/scratch/j/jadiruss/H3K9me3_new/align
-peaks=/u/scratch/j/jadiruss/H3K9me3_new/peaks
+readsout=/u/scratch/j/jadiruss/H3K9me3_update/align
 
 #first, align using STAR. 
-
 COUNT=1
 for fq in "${fqs[@]}"; do
     if [ $COUNT -eq $SGE_TASK_ID ]; then
@@ -77,7 +61,7 @@ MarkDuplicates I=$readsout/$fq"_STAR_nmulti1_Aligned.sortedByCoord.out.bam" O=$r
 M=$readsout/$fq"_all_mrkdup.txt" REMOVE_DUPLICATES=true \
 CREATE_INDEX=true VALIDATION_STRINGENCY=LENIENT
 
-#Sort and index deducplicated alignments
+#Sort and index deduplicated alignments
 
 samtools sort -@ $threads $readsout/$fq"_STAR_sorted_unique_rmdup.bam" -o $readsout/$fq"_STAR_sorted_unique_rmdup_sorted.bam"
 samtools index -@ $threads $readsout/$fq"_STAR_sorted_unique_rmdup_sorted.bam"
@@ -85,7 +69,7 @@ samtools index -@ $threads $readsout/$fq"_STAR_sorted_unique_rmdup_sorted.bam"
 samtools sort -@ $threads $readsout/$fq"_STAR_sorted_nmulti1_rmdup.bam" -o $readsout/$fq"_STAR_sorted_nmulti1_rmdup_sorted.bam"
 samtools index -@ $threads $readsout/$fq"_STAR_sorted_nmulti1_rmdup_sorted.bam"
 
-#write read stats to file
+#write read stats to file.
 
 mkdir $outdir/$fq
 
