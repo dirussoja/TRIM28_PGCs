@@ -45,8 +45,8 @@ E125-ChIP-Male-Inp-2-L4_S25_L004
 
 threads=6
 
-reads=/u/scratch/j/jadiruss/TRIM28_ChIP_DEseq2/reads
-trim=/u/scratch/j/jadiruss/TRIM28_ChIP_DEseq2/trim
+reads=/u/scratch/j/jadiruss/TRIM28_ChIP/reads
+trim=/u/scratch/j/jadiruss/TRIM28_ChIP/trim
 
 COUNT=1
 for fq in "${fqs[@]}"; do
