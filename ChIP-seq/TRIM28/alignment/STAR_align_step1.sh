@@ -27,9 +27,9 @@ E125-ChIP-Male-Inp-2
 threads=6
 
 genome=/u/home/j/jadiruss/project-clarka/Genomes/mm39_STAR_noGTF
-reads=/u/scratch/j/jadiruss/TRIM28_ChIP_DEseq2/trim
-outdir=/u/scratch/j/jadiruss/TRIM28_ChIP_DEseq2/summaries
-readsout=/u/scratch/j/jadiruss/TRIM28_ChIP_DEseq2/align
+reads=/u/scratch/j/jadiruss/TRIM28_ChIP/trim
+outdir=/u/scratch/j/jadiruss/TRIM28_ChIP/summaries
+readsout=/u/scratch/j/jadiruss/TRIM28_ChIP/align
 
 
 #first, align using STAR. 
