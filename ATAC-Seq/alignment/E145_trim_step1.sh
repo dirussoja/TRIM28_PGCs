@@ -1,0 +1,77 @@
+#!/bin/bash
+#$ -N E145_ATAC_Trim
+#$ -cwd
+#$ -l h_data=8G,h_rt=6:00:00
+#$ -t 1-45:1
+#$ -pe shared 6
+
+source ~/.bashrc
+module load python/3.6.8
+
+fqs=(
+E145-F-MUT1-L1_S12_L001
+E145-F-MUT1-L2_S45_L002
+E145-F-MUT1-L3_S36_L003
+E145-F-MUT2-L1_S13_L001
+E145-F-MUT2-L2_S46_L002
+E145-F-MUT2-L3_S37_L003
+E145-F-MUT3-L1_S14_L001
+E145-F-MUT3-L2_S47_L002
+E145-F-MUT3-L3_S38_L003
+E145-F-MUT4-L1_S15_L001
+E145-F-MUT4-L2_S48_L002
+E145-F-MUT4-L3_S39_L003
+E145-F-WT1-L1_S8_L001
+E145-F-WT1-L2_S41_L002
+E145-F-WT1-L3_S32_L003
+E145-F-WT2-L1-empirical_S9_L001
+E145-F-WT2-L2-empirical_S42_L002
+E145-F-WT2-L3-empirical_S33_L003
+E145-F-WT3-L1_S10_L001
+E145-F-WT3-L2_S43_L002
+E145-F-WT3-L3_S34_L003
+E145-F-WT4-L1_S11_L001
+E145-F-WT4-L2_S44_L002
+E145-F-WT4-L3_S35_L003
+E145-M-MUT1-L1_S5_L001
+E145-M-MUT1-L2_S38_L002
+E145-M-MUT1-L3_S29_L003
+E145-M-MUT2-L1_S6_L001
+E145-M-MUT2-L2_S39_L002
+E145-M-MUT2-L3_S30_L003
+E145-M-MUT3-L1_S7_L001
+E145-M-MUT3-L2_S40_L002
+E145-M-MUT3-L3_S31_L003
+E145-M-WT1-L1_S1_L001
+E145-M-WT1-L2_S34_L002
+E145-M-WT1-L3_S25_L003
+E145-M-WT2-L1_S2_L001
+E145-M-WT2-L2_S35_L002
+E145-M-WT2-L3_S26_L003
+E145-M-WT3-L1_S3_L001
+E145-M-WT3-L2_S36_L002
+E145-M-WT3-L3_S27_L003
+E145-M-WT4-L1_S4_L001
+E145-M-WT4-L2_S37_L002
+E145-M-WT4-L3_S28_L003
+)
+
+threads=6
+
+reads=/u/scratch/j/jadiruss/E145_ATAC_STAR/reads
+trim=/u/scratch/j/jadiruss/E145_ATAC_STAR/trim
+
+readsout=/u/scratch/j/jadiruss/E145_ATAC_STAR/align
+
+COUNT=1
+for fq in "${fqs[@]}"; do
+    if [ $COUNT -eq $SGE_TASK_ID ]; then
+ 
+source /u/home/j/jadiruss/env_python3.6.8/bin/activate
+source ~/.bashrc
+
+trim_galore --fastqc --stringency 3 --length 20 -o $trim/ -j $threads --paired --nextseq 20 $reads/$fq"_R1_001.fastq.gz" $reads/$fq"_R2_001.fastq.gz"
+
+fi;
+    COUNT=$[COUNT+1];
+done;
