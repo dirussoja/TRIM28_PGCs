@@ -2,7 +2,7 @@
 #$ -N atac_soma_set1
 #$ -cwd
 #$ -l h_data=10G,h_rt=8:00:00
-#$ -t 1-11:1
+#$ -t 1-5:1
 #$ -pe shared 6
 
 source ~/.bashrc
