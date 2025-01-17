@@ -11,8 +11,8 @@ module load samtools/1.15
 threads=6
 
 genome=/u/scratch/j/jadiruss/Genomes/mm39_STAR
-reads=/u/scratch/j/jadiruss/TRIM28_ChIP_DEseq2/merge
-readsout=/u/scratch/j/jadiruss/TRIM28_ChIP_DEseq2/align
+reads=/u/scratch/j/jadiruss/TRIM28_ChIP/merge
+readsout=/u/scratch/j/jadiruss/TRIM28_ChIP/align
 
 
 #E125 Male
